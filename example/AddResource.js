@@ -22,6 +22,7 @@ class AddResource extends Component{
             viewModel: schedulerData,
             visible: false
         }
+        this.formRef = React.createRef();
     }
     showModal = () => {
         this.setState({ visible: true });
@@ -30,29 +31,22 @@ class AddResource extends Component{
         this.setState({ visible: false });
     }
     handleCreate = () => {
-        const form = this.form;
-        form.validateFields((err, values) => {
-            if (err) {
-                return;
-            }
+        this.formRef.current.validateFields().then((values) => {
             this.addResource(values.name)
-            form.resetFields();
+            this.formRef.current.resetFields();
             this.setState({ visible: false });
+        }).catch(err => {
+            console.log(err)
         });
-        
-    }
-    saveFormRef = (form) => {
-        this.form = form;
     }
 
     render(){
         const {viewModel} = this.state;
-
         let leftCustomHeader = (
             <div>
                 <span style={{ fontWeight: 'bold' }}><a onClick={this.showModal}>Add a resource</a></span>
                 <AddResourceForm
-                    ref={this.saveFormRef}
+                    formRef={this.formRef}
                     visible={this.state.visible}
                     onCancel={this.handleCancel}
                     onCreate={this.handleCreate}
